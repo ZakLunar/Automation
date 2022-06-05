@@ -1,21 +1,47 @@
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
 import org.openqa.selenium.By;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.Selenide.$;
 
+//Не зміг використати для Selenide
+///////////////////////////////////////////////////////
+////////- waitUntil(Condition, milliseconds)
+////////- waitWhile(Condition, milliseconds)
+///////////////////////////////////////////////////////
+
 public class HomeWorkSelenideTest {
 
-    @Test
-    public void jysk_SearchSuggestion_Themes() {
+    @BeforeMethod
+    public void setUp() {
         Configuration.browserSize = "1366x768";
+    }
+
+    @AfterMethod
+    public void waitAtTheEnd() throws InterruptedException {
+        Thread.sleep(2000);
+    }
+
+    @BeforeGroups("search.jysk")
+    public void setUpForGroup_jysk() {
         open("https://jysk.ua/");
         $(".coi-banner__summary").should(Condition.appear);
         $(By.xpath("//button[text()='Прийняти все']")).click();
         $(".coi-banner__summary").should(Condition.disappear);
+        System.out.println("BeforeGroups method executed for search.jysk");//info message
+    }
+
+    @DataProvider
+    public Object[][] dataProviderTest(){
+        return new Object[][]{{"Софа"},{"Декор"}};
+    }
+    /////////////////// TEST ///////////////////
+
+    @Test(groups = {"search.jysk"})
+    public void jysk_SearchSuggestion_Themes() {
         $(".search-input.form-control").shouldBe(Condition.empty).shouldHave(Condition.attribute("placeholder", "Шукати товар або категорію..."));
         $(".search-input.form-control").setValue("шафа");
         $(".header-search__results").should(Condition.appear);
@@ -23,9 +49,18 @@ public class HomeWorkSelenideTest {
         $(".mt-0.mb-4").shouldHave(Condition.text("Як вибрати шафу?"));
     }
 
-    @Test(priority = 1)
+    @Test(groups = {"search.jysk"}, dataProvider = "dataProviderTest") //Data Provider
+    public void jysk_SearchSuggestion_DataProvider(String value) {
+        $(".search-input.form-control").shouldBe(Condition.empty).shouldHave(Condition.attribute("placeholder", "Шукати товар або категорію..."));
+        $(".search-input.form-control").setValue(value);
+        $(".header-search__results").should(Condition.appear);
+        $(By.xpath("//*[@class='search-suggestion-list']/li[1]//li[1]")).click();
+        $(".category-menu").scrollTo();
+        $(".category-menu").shouldHave(Condition.text(value));
+    }
+
+    @Test(priority = 1, groups = {"search.np"})
     public void novaPoshta_SearchByNumberOfOffice() {
-        Configuration.browserSize = "1366x768";
         open("https://novaposhta.ua/");
         $(By.xpath("//*[@id='top_menu']/li[5]")).hover();
         $("a[href='/office/list']").click();
@@ -39,9 +74,8 @@ public class HomeWorkSelenideTest {
         $(".lowercase").shouldHave(Condition.text("Відділення №41"));
     }
 
-    @Test(priority = 2)
+    @Test(priority = 2, groups = {"filter.dou"})
     public void dou_FilterSalaryByPositionAtKiev() {
-        Configuration.browserSize = "1366x768";
         open("https://dou.ua/");
         $("a[href='https://jobs.dou.ua/salaries/']").click();
         $("#dou-widget-salary").shouldBe(Condition.visible);
@@ -62,14 +96,13 @@ public class HomeWorkSelenideTest {
         $(".query").should(Condition.appear);
     }
 
-    @Test(priority = 3)
+    @Test(priority = 3, groups = {"course.hillel"}, enabled = false)
     public void hillel_OpenCourseOfTesting() {
-        Configuration.browserSize = "1366x768";
         open("https://ithillel.ua/");
-        $(".cookie-ntf").shouldHave(Condition.attribute("class", "cookie-ntf -visible"));
+        $(".cookie-ntf").shouldBe(Condition.visible);
         $(By.xpath("//button[text()='Прийняти']")).click();
+        $(".cookie-ntf").shouldNotHave(Condition.attribute("class", "-visible"));
         $("#form-lead-magnet > div > button").click();
-        //$("#form-lead-magnet").should(Condition.disappear);
         $(".block-course-cats_title").scrollTo();
         $("a[href='https://ithillel.ua/courses/testing']").click();
         $(".block-profession-heading_group").scrollTo();
@@ -77,19 +110,36 @@ public class HomeWorkSelenideTest {
         $(By.xpath("//span[@class='course-descriptor_header-text']/strong")).shouldHave(Condition.text("QA Automation"));
 
     }
+    //before group --->
+    @BeforeGroups("c.hillel")
+    public void setUpForHillel(){
+        open("https://ithillel.ua/");
+        $(".cookie-ntf").shouldBe(Condition.visible);
+        $(By.xpath("//button[text()='Прийняти']")).click();
+        $(".cookie-ntf").shouldNotHave(Condition.attribute("class", "-visible"));
+        $("#form-lead-magnet > div > button").click();
+    }
+    //For invocation count
+    @Test(priority = 3, groups = {"c.hillel"}, invocationCount = 2)
+    public void hillel_OpenCourseOfTesting_Clone() {
+        $(".block-course-cats_title").scrollTo();
+        $("a[href='https://ithillel.ua/courses/testing']").click();
+        $(".block-profession-heading_group").scrollTo();
+        $(By.xpath("//*[@id='categories']/div[2]//li[2]")).click();
+        $(By.xpath("//span[@class='course-descriptor_header-text']/strong")).shouldHave(Condition.text("QA Automation"));
+        $(".site-nav_logo").click();
+    }
 
-    @Test(priority = 4)
+    @Test(priority = 4, groups = {"negative_test.cart"}, enabled = false)
     public void rozetka_EmptyCart() {
-        Configuration.browserSize = "1366x768";
         open("https://rozetka.com.ua/");
         $("button[opencart]").click();
         $(By.className("cart-dummy__heading")).shouldHave(Condition.text("Корзина пуста"));
         $(By.className("cart-dummy__caption")).shouldHave(Condition.text("Но это никогда не поздно исправить :)"));
     }
 
-    @Test(priority = 5)
+    @Test(priority = 5, groups = {"dns.read"})
     public void dns_ReadStory() {
-        Configuration.browserSize = "1366x768";
         open("https://howdns.works/");
         $(By.className("btn")).click();
         $("header span").shouldHave(Condition.text("Episode 1"));
