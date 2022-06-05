@@ -1,12 +1,8 @@
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Selectors.byText;
@@ -15,33 +11,12 @@ import static com.codeborne.selenide.Selenide.$;
 
 public class HomeWorkSelenideTest {
 
-    @Before
+    @BeforeEach
     public void setup() {
         Configuration.browserSize = "1366x768";
     }
 
-//    @RunWith(Parameterized.class)
-//    public class FibonacciTest {
-        @Parameter
-        public static Object[] value() {
-            return new Object[][]{{"first test", "second test"}};
-        }
-    //}
-
-    @Test
-    public void jysk_SearchSuggestion_Themes() {
-        open("https://jysk.ua/");
-        $(".coi-banner__summary").should(Condition.appear);
-        $(By.xpath("//button[text()='Прийняти все']")).click();
-        $(".coi-banner__summary").should(Condition.disappear);
-        $(".search-input.form-control").shouldBe(Condition.empty).shouldHave(Condition.attribute("placeholder", "Шукати товар або категорію..."));
-        $(".search-input.form-control").setValue("шафа");
-        $(".header-search__results").should(Condition.appear);
-        $(By.xpath("//div[text()='Як вибрати шафу?']")).click();
-        $(".mt-0.mb-4").shouldHave(Condition.text("Як вибрати шафу?"));
-    }
-
-    @Test
+    @RepeatedTest(2)
     public void novaPoshta_SearchByNumberOfOffice() {
         open("https://novaposhta.ua/");
         $(By.xpath("//*[@id='top_menu']/li[5]")).hover();
@@ -92,7 +67,7 @@ public class HomeWorkSelenideTest {
 
     }
 
-    @Ignore //@Disabled("skip it test, because necessary") - JUnit5
+    @Disabled("skip it test, because necessary")
     public void rozetka_EmptyCart() {
         open("https://rozetka.com.ua/");
         $("button[opencart]").click();
@@ -133,4 +108,5 @@ public class HomeWorkSelenideTest {
         $("header h1").shouldHave(Condition.text("Bonus: Glue records"));
         $(By.className("next-ep")).scrollTo();
     }
+
 }
