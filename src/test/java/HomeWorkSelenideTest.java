@@ -1,7 +1,13 @@
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.openqa.selenium.By;
-import org.testng.annotations.Test;
 
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
@@ -9,9 +15,21 @@ import static com.codeborne.selenide.Selenide.$;
 
 public class HomeWorkSelenideTest {
 
+    @Before
+    public void setup() {
+        Configuration.browserSize = "1366x768";
+    }
+
+//    @RunWith(Parameterized.class)
+//    public class FibonacciTest {
+        @Parameter
+        public static Object[] value() {
+            return new Object[][]{{"first test", "second test"}};
+        }
+    //}
+
     @Test
     public void jysk_SearchSuggestion_Themes() {
-        Configuration.browserSize = "1366x768";
         open("https://jysk.ua/");
         $(".coi-banner__summary").should(Condition.appear);
         $(By.xpath("//button[text()='Прийняти все']")).click();
@@ -23,9 +41,8 @@ public class HomeWorkSelenideTest {
         $(".mt-0.mb-4").shouldHave(Condition.text("Як вибрати шафу?"));
     }
 
-    @Test(priority = 1)
+    @Test
     public void novaPoshta_SearchByNumberOfOffice() {
-        Configuration.browserSize = "1366x768";
         open("https://novaposhta.ua/");
         $(By.xpath("//*[@id='top_menu']/li[5]")).hover();
         $("a[href='/office/list']").click();
@@ -39,9 +56,8 @@ public class HomeWorkSelenideTest {
         $(".lowercase").shouldHave(Condition.text("Відділення №41"));
     }
 
-    @Test(priority = 2)
+    @Test
     public void dou_FilterSalaryByPositionAtKiev() {
-        Configuration.browserSize = "1366x768";
         open("https://dou.ua/");
         $("a[href='https://jobs.dou.ua/salaries/']").click();
         $("#dou-widget-salary").shouldBe(Condition.visible);
@@ -62,14 +78,12 @@ public class HomeWorkSelenideTest {
         $(".query").should(Condition.appear);
     }
 
-    @Test(priority = 3)
+    @Test
     public void hillel_OpenCourseOfTesting() {
-        Configuration.browserSize = "1366x768";
         open("https://ithillel.ua/");
         $(".cookie-ntf").shouldHave(Condition.attribute("class", "cookie-ntf -visible"));
         $(By.xpath("//button[text()='Прийняти']")).click();
         $("#form-lead-magnet > div > button").click();
-        //$("#form-lead-magnet").should(Condition.disappear);
         $(".block-course-cats_title").scrollTo();
         $("a[href='https://ithillel.ua/courses/testing']").click();
         $(".block-profession-heading_group").scrollTo();
@@ -78,18 +92,16 @@ public class HomeWorkSelenideTest {
 
     }
 
-    @Test(priority = 4)
+    @Ignore //@Disabled("skip it test, because necessary") - JUnit5
     public void rozetka_EmptyCart() {
-        Configuration.browserSize = "1366x768";
         open("https://rozetka.com.ua/");
         $("button[opencart]").click();
         $(By.className("cart-dummy__heading")).shouldHave(Condition.text("Корзина пуста"));
         $(By.className("cart-dummy__caption")).shouldHave(Condition.text("Но это никогда не поздно исправить :)"));
     }
 
-    @Test(priority = 5)
+    @Test
     public void dns_ReadStory() {
-        Configuration.browserSize = "1366x768";
         open("https://howdns.works/");
         $(By.className("btn")).click();
         $("header span").shouldHave(Condition.text("Episode 1"));
