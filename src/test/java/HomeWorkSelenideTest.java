@@ -8,6 +8,7 @@ import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.Selenide.$;
 
 public class HomeWorkSelenideTest {
+
     @Test
     public void jysk_SearchSuggestion_Themes() {
         Configuration.browserSize = "1366x768";
@@ -22,7 +23,7 @@ public class HomeWorkSelenideTest {
         $(".mt-0.mb-4").shouldHave(Condition.text("Як вибрати шафу?"));
     }
 
-    @Test
+    @Test(priority = 1)
     public void novaPoshta_SearchByNumberOfOffice() {
         Configuration.browserSize = "1366x768";
         open("https://novaposhta.ua/");
@@ -38,7 +39,7 @@ public class HomeWorkSelenideTest {
         $(".lowercase").shouldHave(Condition.text("Відділення №41"));
     }
 
-    @Test
+    @Test(priority = 2)
     public void dou_FilterSalaryByPositionAtKiev() {
         Configuration.browserSize = "1366x768";
         open("https://dou.ua/");
@@ -61,21 +62,23 @@ public class HomeWorkSelenideTest {
         $(".query").should(Condition.appear);
     }
 
-    @Test
+    @Test(priority = 3)
     public void hillel_OpenCourseOfTesting() {
         Configuration.browserSize = "1366x768";
         open("https://ithillel.ua/");
-        $(By.xpath("//button[text()='Прийняти']")).should(Condition.appear);
+        $(".cookie-ntf").shouldHave(Condition.attribute("class", "cookie-ntf -visible"));
         $(By.xpath("//button[text()='Прийняти']")).click();
         $("#form-lead-magnet > div > button").click();
         //$("#form-lead-magnet").should(Condition.disappear);
+        $(".block-course-cats_title").scrollTo();
         $("a[href='https://ithillel.ua/courses/testing']").click();
+        $(".block-profession-heading_group").scrollTo();
         $(By.xpath("//*[@id='categories']/div[2]//li[2]")).click();
         $(By.xpath("//span[@class='course-descriptor_header-text']/strong")).shouldHave(Condition.text("QA Automation"));
 
     }
 
-    @Test
+    @Test(priority = 4)
     public void rozetka_EmptyCart() {
         Configuration.browserSize = "1366x768";
         open("https://rozetka.com.ua/");
@@ -84,7 +87,7 @@ public class HomeWorkSelenideTest {
         $(By.className("cart-dummy__caption")).shouldHave(Condition.text("Но это никогда не поздно исправить :)"));
     }
 
-    @Test
+    @Test(priority = 5)
     public void dns_ReadStory() {
         Configuration.browserSize = "1366x768";
         open("https://howdns.works/");
